@@ -1,69 +1,87 @@
+// import logo from './logo.svg';
+//add also useState and useEffect
+import React,{useState,useEffect} from 'react'
+//import axios
+import axios from 'axios'
 import './App.css';
+import Coin from './Components/Coin.js'
+
+
 
 function App() {
+
+    //make coin array
+    const [coins,setCoins]=useState([])
+    const [search,setSearch]=useState('')
+
+  //define useEffect
+  useEffect(()=>{
+    //getting api
+    axios.get('https://api.coingecko.com/api/v3/coins/markets?vs_currency=inr&order=market_cap_desc&per_page=100&page=1&sparkline=false')
+    .then(res=>{
+      //getting data
+      setCoins(res.data)
+      //checking data in console
+      //console.log(res.data)
+
+
+    }).catch(error=>alert('error is there in getting api'))
+  },[]);
+
+
+  const handleChange=e=>{
+    setSearch(e.target.value)
+  }
+
+
+  const filteredCoins=coins.filter(coin=>
+    coin.name.toLowerCase().includes(search.toLocaleLowerCase())
+  )
+
+  // const coin_container_style={
+  //   display: "flex",
+  //   justify_: "center"
+  // };
+
+  // const coin_row_style={
+  //   display: "flex",
+  //   flex-direction: "row",
+  //   justify-content: "start",
+  //   align-items: "center",
+  //   height: "80px",
+  //   border-bottom: "1px solid #d7d7d7",
+  //   width: "900px"
+  // };
+
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img
-          src="https://media3.giphy.com/media/13CoXDiaCcCoyk/giphy.gif?cid=ecf05e47mkcj61h3gjm3wjb2p4a067eiutl03vig47jsrksp&rid=giphy.gif&ct=g"
-          className="App-logo"
-          alt="cat shoulder shake"
-        />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn <span style={{ textDecoration: 'line-through' }}>Recat</span>{' '}
-          React
-        </a>
-      </header>
-      <main>
-        <p>
-          You probably meant to run <code>npx create-react-app</code> instead of{' '}
-          <code>npx create-recat-app</code>, but we're all here now and you
-          might as well enjoy some cats while you're at it.
-        </p>
-        <p className="images">
-          <img
-            src="https://media4.giphy.com/media/ICOgUNjpvO0PC/giphy.gif?cid=790b76118fbd3d2f0a35e8ff4036a66280840c2540f58474&rid=giphy.gif&ct=g"
-            alt="cat waving"
-          />
-          <img
-            src="https://media2.giphy.com/media/VbnUQpnihPSIgIXuZv/giphy.gif?cid=790b7611a46365babee79d6ce8d46d72eed5122eee0e6ef0&rid=giphy.gif&ct=g"
-            alt="cat developer"
-          />
-          <img
-            src="https://media3.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif?cid=790b7611e3ce0fc616ae6fb98d342b0b8131d965c75fac1b&rid=giphy.gif&ct=g"
-            alt="cat fast typing"
-          />
-          <img
-            src="https://media3.giphy.com/media/12PA1eI8FBqEBa/giphy.gif?cid=790b7611dfb7917b89f875b566ebedb7dc44135253c05172&rid=giphy.gif&ct=g"
-            alt="cat with chicks"
-          />
-          <img
-            src="https://media1.giphy.com/media/krZUvydC7Qrdu/giphy.gif?cid=790b7611c21df70db966c73cf4817e5bd79d5b4711ddc9f9&rid=giphy.gif&ct=g"
-            alt="cat riding ram"
-          />
-          <img
-            src="https://media3.giphy.com/media/10dU7AN7xsi1I4/giphy.gif?cid=790b7611a97153a9f993c7fc252257c0bb66399df74945ab&rid=giphy.gif&ct=g"
-            alt="cat all for one"
-          />
-          <img
-            src="https://media1.giphy.com/media/17Q92poP1qJwI/giphy.gif?cid=790b7611400844530bf6fe0debc6685cbcd4fff4ce6fd067&rid=giphy.gif&ct=g"
-            alt="cat teddy bear"
-          />
-        </p>
-        <p>
-          If you like tools that save you the pain of managing a build system,
-          check out Nx at{' '}
-          <a href="https://nx.dev/react">https://nx.dev/react</a>.
-        </p>
-      </main>
+    <div className="coin-app">
+      <div className="coin-search">
+        <h1 className="coin-text">Search Currency</h1>
+        <form>
+          <input type="text" placeholder="search" className="coin-input" onChange={handleChange}/>
+        </form>
+      </div>
+
+      <div className='app_coin_container'>
+                <div className='app_coin_row'>
+                    <h3 style={{paddingRight: "120px"}}>Name</h3>
+                    <h3 style={{paddingRight: "90px"}}>Symbol</h3>
+                    <h3 style={{paddingRight: "60px"}}>Current Price</h3>
+                    <h3 style={{paddingRight: "60px"}}>Volume</h3>
+                    <h3 style={{paddingRight: "90px"}}>Price Change%</h3>
+                    <h3 style={{paddingRight: "90px"}}>Market Cap</h3>
+                </div>
+
+      </div>
+
+    {filteredCoins.map(coin=>{
+      return(
+        <Coin key={coin.id} name={coin.name} image={coin.image} symbol={coin.symbol} marketcap={coin.market_cap}
+         price={coin.current_price} 
+         priceChange={coin.price_change_percentage_24h} volume={coin.total_volume}/>
+      )
+    })}
     </div>
   );
 }
